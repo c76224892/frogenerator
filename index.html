@@ -405,10 +405,10 @@
   <!-- Log Area -->
   <div class="log" id="logArea"></div>
 
-  <!-- How It Works Section -->
+  <!-- Info Sections -->
   <div class="info-section" id="how-it-works">
     <h2>How It Works</h2>
-    <p>Step into a retro-hacker space where each Frog is hashed from your *wallet address + optional ID*. Our system maps that hash to ASCII frog attributes—species, skin color, accessories, and more.</p>
+    <p>Step into a retro-hacker space where each Frog is hashed from your <strong>wallet address + optional ID</strong>. Our system maps that hash to ASCII frog attributes—species, skin color, accessories, and more.</p>
     <ol>
       <li><strong>Connect Wallet</strong>: Link your Phantom wallet for a secure session.</li>
       <li><strong>ID Input</strong>: Enter a unique ID or default to your wallet address alone.</li>
@@ -419,12 +419,9 @@
     <p>Embrace the code & see what amphibian emerges. #NeonFrog</p>
   </div>
 
-  <!-- Frog Species & Traits Section -->
   <div class="info-section" id="frog-lore">
     <h2>Frog Species & Traits</h2>
     <p>From mystical swamp dwellers to mountainous toads, each ASCII frog has distinct quirks. Here are some you may encounter:</p>
-
-    <!-- Lore Grid -->
     <div class="lore-grid">
       <div class="lore-item">
         <h4>Mellow Marsh Frog</h4>
@@ -442,7 +439,6 @@
         <h4>Desert Hopper</h4>
         <p>Thick skin to handle dryness, leaps far in search of hidden oases.</p>
       </div>
-      <!-- Add more as you like... -->
     </div>
 
     <h3>Rarity & Collectibility</h3>
@@ -454,187 +450,198 @@
     © 2025 FROG GENERATOR | NEON AMPHIBIANS & CODE
   </footer>
 
-  <!-- Script: EXACT SAME LOGIC, REPLACING “CAT” WITH “FROG” -->
+  <!-- Script -->
   <script>
-  (function() {
-    // DOM Elements
-    const connectWalletButton = document.getElementById('connect-wallet');
-    const walletAddressDisplay = document.getElementById('wallet-address');
-    const generatorSection = document.getElementById('generator-section');
-    const frogInput = document.getElementById('frog-id');
-    const generateButton = document.getElementById('generate-button');
-    const frogShowcase = document.getElementById('frog-showcase');
-    const loadingContainer = document.getElementById('loading-container');
-    const logArea = document.getElementById('logArea');
+    (function() {
+      // DOM Elements
+      const connectWalletButton = document.getElementById('connect-wallet');
+      const walletAddressDisplay = document.getElementById('wallet-address');
+      const generatorSection = document.getElementById('generator-section');
+      const frogInput = document.getElementById('frog-id');
+      const generateButton = document.getElementById('generate-button');
+      const frogShowcase = document.getElementById('frog-showcase');
+      const loadingContainer = document.getElementById('loading-container');
+      const logArea = document.getElementById('logArea');
 
-    // Phantom Wallet Integration
-    const getProvider = () => {
-      if ("solana" in window) {
-        const provider = window.solana;
-        if (provider.isPhantom) return provider;
-      }
-      return null;
-    };
-
-    let userWalletAddress = null;
-
-    // Connect Wallet
-    const connectWallet = async () => {
-      const provider = getProvider();
-      if (provider) {
-        try {
-          const response = await provider.connect();
-          userWalletAddress = response.publicKey.toString();
-          walletAddressDisplay.textContent = Connected: ${userWalletAddress.substring(0,6)}...${userWalletAddress.substring(userWalletAddress.length-4)};
-          connectWalletButton.style.display = 'none';
-          generatorSection.style.display = 'block';
-          logMessage("Wallet connected successfully.", "success");
-
-          checkExistingFrog(userWalletAddress);
-        } catch (err) {
-          console.error(err);
-          logMessage("Failed to connect wallet.", "error");
+      /**************
+       * Phantom Wallet Detection & Connection
+       **************/
+      function getPhantomProvider() {
+        if ('solana' in window) {
+          // Check if it's Phantom
+          if (window.solana.isPhantom) {
+            console.log('[Phantom] Phantom wallet found!');
+            return window.solana;
+          } else {
+            console.log('[Phantom] Solana object found, but not Phantom. Another wallet?');
+            return null;
+          }
+        } else {
+          console.log('[Phantom] No Solana object found in window.');
+          return null;
         }
-      } else {
-        alert("Phantom Wallet not found. Please install the Phantom extension.");
-        window.open("https://phantom.app/", "_blank");
       }
-    };
-    connectWalletButton.addEventListener('click', connectWallet);
 
-    // Frog Archetypes + ASCII
-    const FROG_TYPES = [
-      {
-        species: 'Mellow Marsh Frog',
-        traits: ['Calm', 'Easygoing', 'Zen'],
-        art: String.raw`
+      let userWalletAddress = null;
+
+      // Connect Wallet
+      async function connectWallet() {
+        const provider = getPhantomProvider();
+        if (provider) {
+          try {
+            console.log('[Phantom] Attempting to connect...');
+            const response = await provider.connect();
+            userWalletAddress = response.publicKey.toString();
+            console.log('[Phantom] Public Key:', userWalletAddress);
+
+            // Update UI
+            walletAddressDisplay.textContent = Connected: ${userWalletAddress.substring(0,6)}...${userWalletAddress.substring(userWalletAddress.length - 4)};
+            connectWalletButton.style.display = 'none';
+            generatorSection.style.display = 'block';
+
+            logMessage("Wallet connected successfully.", "success");
+            checkExistingFrog(userWalletAddress);
+          } catch (err) {
+            console.error('[Phantom] connect() error:', err);
+            logMessage("Failed to connect wallet. See console for details.", "error");
+          }
+        } else {
+          alert("Phantom Wallet not found. Please install the Phantom extension from https://phantom.app/ and refresh.");
+        }
+      }
+
+      connectWalletButton.addEventListener('click', connectWallet);
+
+      /*********
+       * Frog Generation Logic
+       *********/
+      const FROG_TYPES = [
+        {
+          species: 'Mellow Marsh Frog',
+          traits: ['Calm', 'Easygoing', 'Zen'],
+          art: String.raw`
    (   -.-  )  ~ "Zzzz..."
     (   __  )
      \()/
-        `
-      },
-      {
-        species: 'Swamp Titan Toad',
-        traits: ['Massive', 'Rumbly', 'Voracious'],
-        art: String.raw`
+          `
+        },
+        {
+          species: 'Swamp Titan Toad',
+          traits: ['Massive', 'Rumbly', 'Voracious'],
+          art: String.raw`
    __
   (    )  ~ "Buurp!"
  (  OO  )
   \ __ /
    \/\/
-        `
-      },
-      {
-        species: 'Neon Tree Frog',
-        traits: ['Glowy', 'Acrobatic', 'Curious'],
-        art: String.raw`
+          `
+        },
+        {
+          species: 'Neon Tree Frog',
+          traits: ['Glowy', 'Acrobatic', 'Curious'],
+          art: String.raw`
    /\  /\ 
   (  o.o  ) ~ "Glow..."
   (   __  )
    \()/
-        `
-      },
-      {
-        species: 'Desert Hopper',
-        traits: ['Resilient', 'Leapy', 'Thirsty'],
-        art: String.raw`
+          `
+        },
+        {
+          species: 'Desert Hopper',
+          traits: ['Resilient', 'Leapy', 'Thirsty'],
+          art: String.raw`
  (  o--o ) ~ "Gulp..."
   (  __ )
   /(__)\
-        `
-      },
-      // Add more frogs as desired...
-    ];
+          `
+        }
+      ];
 
-    const SKIN_COLORS = [
-      'Green Skin', 'Brown Skin', 'Spotted Skin', 'Grey Skin',
-      'Golden Skin', 'Aqua Skin', 'Rainbow Skin', 'Pink Skin'
-    ];
+      const SKIN_COLORS = [
+        'Green Skin', 'Brown Skin', 'Spotted Skin', 'Grey Skin',
+        'Golden Skin', 'Aqua Skin', 'Rainbow Skin', 'Pink Skin'
+      ];
 
-    const ACCESSORIES = [
-      'Tiny Crown', 'Lilypad Hat', 'Fly Swatter', 'Water Cape',
-      'Bowtie', 'Laser Pointer', 'Croak Amplifier', 'Royal Lily'
-    ];
+      const ACCESSORIES = [
+        'Tiny Crown', 'Lilypad Hat', 'Fly Swatter', 'Water Cape',
+        'Bowtie', 'Laser Pointer', 'Croak Amplifier', 'Royal Lily'
+      ];
 
-    // Basic ID check
-    function validateID(input) {
-      return input.length >= 4;
-    }
-
-    // Hash function
-    function hashID(input) {
-      let hash = 0;
-      for (let i = 0; i < input.length; i++) {
-        const char = input.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash |= 0; // Convert to 32-bit int
+      function validateID(input) {
+        return input.length >= 4;
       }
-      return Math.abs(hash);
-    }
 
-    // Frog creation
-    function generateFrog(hash) {
-      const speciesIndex = hash % FROG_TYPES.length;
-      const colorIndex = (hash >> 2) % SKIN_COLORS.length;
-      const accessoryIndex = (hash >> 4) % ACCESSORIES.length;
-      const croakLevel = (hash % 100) + 1;
+      function hashID(input) {
+        let hash = 0;
+        for (let i = 0; i < input.length; i++) {
+          hash = ((hash << 5) - hash) + input.charCodeAt(i);
+          hash |= 0; // Convert to 32-bit int
+        }
+        return Math.abs(hash);
+      }
 
-      const frogType = FROG_TYPES[speciesIndex];
-      return {
-        species: frogType.species,
-        skinColor: SKIN_COLORS[colorIndex],
-        accessory: ACCESSORIES[accessoryIndex],
-        trait: frogType.traits[hash % frogType.traits.length],
-        croakLevel: croakLevel,
-        asciiArt: frogType.art
-      };
-    }
+      function generateFrog(hash) {
+        const speciesIndex = hash % FROG_TYPES.length;
+        const colorIndex = (hash >> 2) % SKIN_COLORS.length;
+        const accessoryIndex = (hash >> 4) % ACCESSORIES.length;
+        const croakLevel = (hash % 100) + 1;
 
-    // Show/hide loading
-    function showLoading() {
-      loadingContainer.style.display = 'block';
-      frogShowcase.innerHTML = '<h2>Your Frog Companion</h2>';
-      frogShowcase.style.display = 'none';
-    }
-    function hideLoading() {
-      loadingContainer.style.display = 'none';
-    }
+        const frogType = FROG_TYPES[speciesIndex];
+        return {
+          species: frogType.species,
+          skinColor: SKIN_COLORS[colorIndex],
+          accessory: ACCESSORIES[accessoryIndex],
+          trait: frogType.traits[hash % frogType.traits.length],
+          croakLevel,
+          asciiArt: frogType.art
+        };
+      }
 
-    // Display Frog
-    function displayFrog(frog) {
-      const frogCard = document.createElement('div');
-      frogCard.className = 'gnome'; // reuse style class
-      frogCard.innerHTML = `
+      // Show/hide loading
+      function showLoading() {
+        loadingContainer.style.display = 'block';
+        frogShowcase.innerHTML = '<h2>Your Frog Companion</h2>';
+        frogShowcase.style.display = 'none';
+      }
+      function hideLoading() {
+        loadingContainer.style.display = 'none';
+      }
+
+      // Display Frog
+      function displayFrog(frog) {
+        const frogCard = document.createElement('div');
+        frogCard.className = 'gnome'; // reuse style class
+        frogCard.innerHTML = `
 ${frog.asciiArt}
 <p><strong>Species:</strong> ${frog.species}</p>
 <p><strong>Skin Color:</strong> ${frog.skinColor}</p>
 <p><strong>Personality Trait:</strong> ${frog.trait}</p>
 <p><strong>Accessory:</strong> ${frog.accessory}</p>
 <p><strong>Croak Level:</strong> ${frog.croakLevel}/100</p>
-      `;
+        `;
 
-      // Download button
-      const downloadButton = document.createElement('button');
-      downloadButton.className = 'download-btn';
-      downloadButton.textContent = 'Download Frog Info';
-      downloadButton.addEventListener('click', () => downloadFrog(frog));
+        // Download button
+        const downloadButton = document.createElement('button');
+        downloadButton.className = 'download-btn';
+        downloadButton.textContent = 'Download Frog Info';
+        downloadButton.addEventListener('click', () => downloadFrog(frog));
 
-      // Share button
-      const shareButton = document.createElement('button');
-      shareButton.className = 'share-btn';
-      shareButton.textContent = 'Share on X';
-      shareButton.addEventListener('click', () => shareOnX(frog));
+        // Share button
+        const shareButton = document.createElement('button');
+        shareButton.className = 'share-btn';
+        shareButton.textContent = 'Share on X';
+        shareButton.addEventListener('click', () => shareOnX(frog));
 
-      frogCard.appendChild(downloadButton);
-      frogCard.appendChild(shareButton);
-      frogShowcase.appendChild(frogCard);
+        frogCard.appendChild(downloadButton);
+        frogCard.appendChild(shareButton);
+        frogShowcase.appendChild(frogCard);
 
-      frogShowcase.style.display = 'block';
-    }
+        frogShowcase.style.display = 'block';
+      }
 
-    // Download Frog
-    function downloadFrog(frog) {
-      const frogDetails = `
+      // Download Frog
+      function downloadFrog(frog) {
+        const frogDetails = `
 Frog Details:
 -------------------
 Species: ${frog.species}
@@ -645,17 +652,17 @@ Croak Level: ${frog.croakLevel}/100
 
 ASCII Art:
 ${frog.asciiArt}
-      `;
-      const blob = new Blob([frogDetails], { type: 'text/plain' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = ${frog.species.replace(/\s/g, '_')}_Frog.txt;
-      link.click();
-    }
+        `;
+        const blob = new Blob([frogDetails], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = ${frog.species.replace(/\s/g, '_')}_Frog.txt;
+        link.click();
+      }
 
-    // Share on X
-    function shareOnX(frog) {
-      const message = `I just adopted a new ASCII Frog!
+      // Share on X
+      function shareOnX(frog) {
+        const message = `I just adopted a new ASCII Frog!
 
 Species: ${frog.species}
 Skin Color: ${frog.skinColor}
@@ -665,77 +672,76 @@ Croak Level: ${frog.croakLevel}/100
 
 #CreateAFrog
 @FrogGeneratorNeon
-      `;
-      const tweetUrl = https://twitter.com/intent/tweet?text=${encodeURIComponent(message)};
-      window.open(tweetUrl, '_blank');
-    }
-
-    // Logging
-    function logMessage(msg, type="info") {
-      const span = document.createElement("span");
-      span.classList.add(type);
-      span.innerText = msg + "\n";
-      logArea.appendChild(span);
-      logArea.scrollTop = logArea.scrollHeight;
-    }
-
-    // Check existing frog
-    function checkExistingFrog(walletAddress) {
-      const frogData = localStorage.getItem(frog_${walletAddress});
-      if (frogData) {
-        const existingFrog = JSON.parse(frogData);
-        displayFrog(existingFrog);
-        logMessage("A Frog already exists for this wallet.", "warning");
-        generatorSection.style.display = 'none';
-      }
-    }
-
-    // Save Frog
-    function saveFrog(walletAddress, frog) {
-      localStorage.setItem(frog_${walletAddress}, JSON.stringify(frog));
-    }
-
-    // Generate button event
-    generateButton.addEventListener('click', () => {
-      if (!userWalletAddress) {
-        alert('Please connect your Phantom wallet first!');
-        return;
+        `;
+        const tweetUrl = https://twitter.com/intent/tweet?text=${encodeURIComponent(message)};
+        window.open(tweetUrl, '_blank');
       }
 
-      const frogID = frogInput.value.trim();
-      if (!validateID(frogID)) {
-        alert('Please enter a valid ID (at least 4 characters).');
-        return;
+      // Logging
+      function logMessage(msg, type = "info") {
+        const span = document.createElement("span");
+        span.classList.add(type);
+        span.innerText = msg + "\n";
+        logArea.appendChild(span);
+        logArea.scrollTop = logArea.scrollHeight;
       }
 
-      // Check if frog is already stored
-      const existingFrog = localStorage.getItem(frog_${userWalletAddress});
-      if (existingFrog) {
-        alert('You already have a Frog for this wallet.');
-        logMessage("Attempted to adopt multiple Frogs for the same wallet.", "warning");
-        checkExistingFrog(userWalletAddress);
-        return;
+      // Check existing frog
+      function checkExistingFrog(walletAddress) {
+        const frogData = localStorage.getItem(frog_${walletAddress});
+        if (frogData) {
+          const existingFrog = JSON.parse(frogData);
+          displayFrog(existingFrog);
+          logMessage("A Frog already exists for this wallet.", "warning");
+          generatorSection.style.display = 'none';
+        }
       }
 
-      showLoading();
+      function saveFrog(walletAddress, frog) {
+        localStorage.setItem(frog_${walletAddress}, JSON.stringify(frog));
+      }
 
-      // Mimic asynchronous generation
-      setTimeout(() => {
-        const combinedID = userWalletAddress + frogID;
-        const hash = hashID(combinedID);
-        const newFrog = generateFrog(hash);
+      // Generate button event
+      generateButton.addEventListener('click', () => {
+        if (!userWalletAddress) {
+          alert('Please connect your Phantom wallet first!');
+          return;
+        }
 
-        hideLoading();
-        displayFrog(newFrog);
-        logMessage(Frog "${newFrog.species}" adopted successfully., "success");
+        const frogID = frogInput.value.trim();
+        if (!validateID(frogID)) {
+          alert('Please enter a valid ID (at least 4 characters).');
+          return;
+        }
 
-        saveFrog(userWalletAddress, newFrog);
+        // Check if frog is already stored
+        const existingFrog = localStorage.getItem(frog_${userWalletAddress});
+        if (existingFrog) {
+          alert('You already have a Frog for this wallet.');
+          logMessage("Attempted to adopt multiple Frogs for the same wallet.", "warning");
+          checkExistingFrog(userWalletAddress);
+          return;
+        }
 
-        // Hide the generator to prevent multiple frogs
-        generatorSection.style.display = 'none';
-      }, 2000);
-    });
-  })();
+        showLoading();
+
+        // Mimic asynchronous generation
+        setTimeout(() => {
+          const combinedID = userWalletAddress + frogID;
+          const hash = hashID(combinedID);
+          const newFrog = generateFrog(hash);
+
+          hideLoading();
+          displayFrog(newFrog);
+          logMessage(Frog "${newFrog.species}" adopted successfully., "success");
+
+          saveFrog(userWalletAddress, newFrog);
+
+          // Hide the generator to prevent multiple frogs
+          generatorSection.style.display = 'none';
+        }, 2000);
+      });
+    })();
   </script>
 </body>
 </html>
