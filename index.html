@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create a Frog</title>
+  <!-- Fun retro font -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========== HACKER-STYLE COLOR PALETTE ========== */
+    :root {
+      --bg-color: #000000;         /* Pure black */
+      --card-bg: #0d0d0d;          /* Slightly lighter black */
+      --text-green: #00ff66;       /* Vibrant neon green text */
+      --accent-green: #00994d;     /* Slightly darker neon green */
+      --accent-green-light: #33ff99; /* Lighter accent for hover states */
+      --gray-text: #cccccc;        /* Grayish for secondary text */
+    }
+
+    /* ========== GLOBAL RESET & BODY ========== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Press Start 2P', cursive;
+      background: var(--bg-color);
+      color: var(--text-green);
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a {
+      text-decoration: none;
+      color: var(--text-green);
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      color: var(--accent-green-light);
+    }
+
+    /* ========== HERO SECTION ========== */
+    .hero {
+      padding: 60px 20px 40px 20px;
+    }
+    .hero h1 {
+      font-size: 2.5em;
+      color: var(--text-green);
+      text-shadow: 0 0 10px var(--text-green);
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 0.95em;
+      max-width: 600px;
+      margin: 20px auto;
+      line-height: 1.4;
+      color: var(--gray-text);
+    }
+    .hero .links {
+      margin-top: 30px;
+    }
+    .hero a {
+      display: inline-block;
+      margin: 0 10px;
+      padding: 6px 12px;
+      font-size: 0.85em;
+      border-radius: 4px;
+      background-color: rgba(0, 255, 102, 0.1);
+    }
+    .hero a[href="#how-it-works"]::before {
+      content: ">> ";
+      color: var(--accent-green-light);
+    }
+    .hero a[href="#frog-lore"]::before {
+      content: ">> ";
+      color: var(--accent-green-light);
+    }
+
+    /* ========== WALLET CONNECT SECTION ========== */
+    .wallet-connect {
+      margin: 20px 0;
+    }
+    .wallet-connect button {
+      font-size: 0.9em;
+      padding: 10px 20px;
+      background: var(--accent-green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 255, 102, 0.2);
+      transition: background 0.3s, transform 0.2s;
+    }
+    .wallet-connect button:hover {
+      background: var(--accent-green-light);
+      transform: translateY(-2px);
+    }
+    .wallet-address {
+      margin-top: 10px;
+      font-size: 0.85em;
+      color: var(--text-green);
+      opacity: 0.9;
+      word-break: break-all;
+    }
+
+    /* ========== GENERATOR BOX ========== */
+    .generator {
+      margin: 30px auto;
+      padding: 20px;
+      max-width: 500px;
+      background: var(--card-bg);
+      border: 2px dashed var(--accent-green);
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 255, 102, 0.1);
+      display: inline-block;
+    }
+    .generator input {
+      font-size: 0.9em;
+      padding: 8px;
+      width: 280px;
+      margin: 10px;
+      border-radius: 6px;
+      border: 2px solid var(--accent-green);
+      background: #000000;
+      color: var(--text-green);
+      outline: none;
+      transition: border 0.3s;
+    }
+    .generator input:focus {
+      border-color: var(--accent-green-light);
+    }
+    .generator button {
+      font-size: 0.9em;
+      padding: 10px 20px;
+      background: var(--accent-green);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 255, 102, 0.2);
+      transition: background 0.3s, transform 0.2s;
+    }
+    .generator button:hover {
+      background: var(--accent-green-light);
+      transform: translateY(-2px);
+    }
+
+    /* ========== LOADING SPINNER ========== */
+    .loading-container {
+      display: none;
+      margin: 20px auto;
+    }
+    .loading-text {
+      font-size: 1em;
+      margin-top: 10px;
+      color: var(--accent-green-light);
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #111;
+      border-top: 5px solid var(--accent-green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ========== FROG SHOWCASE ========== */
+    .gnome-showcase {
+      margin: 40px 0;
+    }
+    .gnome-showcase h2 {
+      color: var(--accent-green-light);
+      font-size: 1.6em;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px var(--accent-green-light);
+    }
+
+    /* ========== SINGLE FROG DISPLAY (CARD) ========== */
+    .gnome {
+      display: inline-block;
+      margin: 20px;
+      padding: 15px;
+      border: 2px solid var(--accent-green-light);
+      border-radius: 6px;
+      background: var(--card-bg);
+      color: var(--text-green);
+      text-align: left;
+      font-size: 0.8em;
+      white-space: pre;
+      overflow-x: auto;
+      width: 300px;
+      box-shadow: 0 2px 6px rgba(0, 255, 102, 0.1);
+      transition: transform 0.2s;
+    }
+    .gnome:hover {
+      transform: translateY(-3px);
+    }
+    .gnome p {
+      margin: 5px 0;
+      line-height: 1.4;
+    }
+
+    /* ========== BUTTONS INSIDE FROG ====== */
+    .download-btn,
+    .share-btn {
+      margin-top: 10px;
+      font-size: 0.75em;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 6px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .download-btn {
+      background: var(--accent-green);
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0,255,102, 0.1);
+    }
+    .download-btn:hover {
+      background: var(--accent-green-light);
+      transform: translateY(-2px);
+    }
+    .share-btn {
+      background: #1DA1F2; /* Twitter / X Blue */
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(29,161,242, 0.2);
+    }
+    .share-btn:hover {
+      background: #40a9f3;
+      transform: translateY(-2px);
+    }
+
+    /* ========== LOG AREA ========== */
+    .log {
+      width: 90%;
+      max-width: 600px;
+      background-color: #111;
+      font-family: monospace;
+      font-size: 0.7em;
+      padding: 10px;
+      border: 1px solid var(--accent-green);
+      border-radius: 6px;
+      margin: 0 auto 40px auto;
+      overflow-y: auto;
+      max-height: 200px;
+      white-space: pre-wrap;
+      color: var(--text-green);
+      text-align: left;
+    }
+    .log span.info {
+      color: #0f0;
+    }
+    .log span.warning {
+      color: #ff0;
+    }
+    .log span.error {
+      color: #f00;
+    }
+    .log span.success {
+      color: #0ff;
+    }
+
+    /* ========== INFO SECTION ========== */
+    .info-section {
+      max-width: 800px;
+      margin: 0 auto 50px auto;
+      background: #0d0d0d;
+      padding: 30px;
+      border-radius: 6px;
+      text-align: left;
+      box-shadow: 0 2px 8px rgba(0,255,102,0.1);
+    }
+    .info-section h2 {
+      text-align: center;
+      color: var(--accent-green);
+      margin-bottom: 20px;
+      font-size: 1.3em;
+      text-shadow: 0 0 5px var(--accent-green);
+    }
+    .info-section h3 {
+      color: var(--accent-green-light);
+      margin-top: 20px;
+      font-size: 1em;
+      margin-bottom: 10px;
+    }
+    .info-section p {
+      line-height: 1.4;
+      margin-bottom: 15px;
+      font-size: 0.85em;
+      color: var(--gray-text);
+    }
+    .info-section ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+      list-style: none;
+      padding: 0;
+    }
+    .info-section ol li::before {
+      content: ">> ";
+      color: var(--accent-green);
+      margin-right: 2px;
+    }
+
+    /* ========== LORE GRID ========== */
+    .lore-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .lore-item {
+      background: #111;
+      padding: 15px;
+      border-radius: 4px;
+      color: var(--text-green);
+      border: 1px solid var(--accent-green);
+      box-shadow: 0 2px 5px rgba(0,255,102,0.1);
+    }
+    .lore-item h4 {
+      margin-top: 0;
+      color: var(--accent-green-light);
+      font-size: 0.9em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ========== FOOTER ========== */
+    footer {
+      margin-top: auto;
+      padding: 20px 0;
+      background: var(--accent-green);
+      color: #000;
+      font-size: 0.7em;
+      text-transform: uppercase;
+      box-shadow: 0 -4px 8px rgba(0,255,102,0.2);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 2em;
+      }
+      .hero p {
+        font-size: 0.8em;
+      }
+      .generator input {
+        width: 80%;
+      }
+      .gnome {
+        width: 90%;
+      }
+      .lore-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <h1>Frog Generator</h1>
+    <p>Connect your Phantom wallet and adopt your very own ASCII-styled Frog in a neon-hacker realm.</p>
+    <div class="links">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#frog-lore">Frog Species & Traits</a>
+    </div>
+  </div>
+
+  <!-- Wallet Connect Section -->
+  <div class="wallet-connect">
+    <button id="connect-wallet">CONNECT WALLET</button>
+    <div id="wallet-address" class="wallet-address"></div>
+  </div>
+
+  <!-- Generator -->
+  <div class="generator" id="generator-section" style="display: none;">
+    <label for="frog-id" style="display:none;">Frog ID</label>
+    <input type="text" id="frog-id" placeholder="> Enter your unique ID...">
+    <button id="generate-button">Adopt My Frog</button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-container" id="loading-container">
+    <div class="spinner"></div>
+    <p class="loading-text">LOADING...</p>
+  </div>
+
+  <!-- Frog Showcase -->
+  <div class="gnome-showcase" id="frog-showcase" style="display: none;">
+    <h2>Your Frog Companion</h2>
+    <!-- Generated Frog will appear here -->
+  </div>
+
+  <!-- Log Area -->
+  <div class="log" id="logArea"></div>
+
+  <!-- How It Works Section -->
+  <div class="info-section" id="how-it-works">
+    <h2>How It Works</h2>
+    <p>Step into a retro-hacker space where each Frog is hashed from your *wallet address + optional ID*. Our system maps that hash to ASCII frog attributes—species, skin color, accessories, and more.</p>
+    <ol>
+      <li><strong>Connect Wallet</strong>: Link your Phantom wallet for a secure session.</li>
+      <li><strong>ID Input</strong>: Enter a unique ID or default to your wallet address alone.</li>
+      <li><strong>Hash Magic</strong>: We generate a 32-bit integer that determines your frog’s style.</li>
+      <li><strong>Frog Attributes</strong>: Everything from “skin color” to “croak level” is set by the hash.</li>
+      <li><strong>Unique Output</strong>: Same input, same frog. Totally yours!</li>
+    </ol>
+    <p>Embrace the code & see what amphibian emerges. #NeonFrog</p>
+  </div>
+
+  <!-- Frog Species & Traits Section -->
+  <div class="info-section" id="frog-lore">
+    <h2>Frog Species & Traits</h2>
+    <p>From mystical swamp dwellers to mountainous toads, each ASCII frog has distinct quirks. Here are some you may encounter:</p>
+
+    <!-- Lore Grid -->
+    <div class="lore-grid">
+      <div class="lore-item">
+        <h4>Mellow Marsh Frog</h4>
+        <p>Calm and easygoing, loves floating on lily pads without a worry.</p>
+      </div>
+      <div class="lore-item">
+        <h4>Swamp Titan Toad</h4>
+        <p>Massive and rumbling croaks. Belches to scare off intruders.</p>
+      </div>
+      <div class="lore-item">
+        <h4>Neon Tree Frog</h4>
+        <p>Glows in the dark, adept climber, extremely curious about everything.</p>
+      </div>
+      <div class="lore-item">
+        <h4>Desert Hopper</h4>
+        <p>Thick skin to handle dryness, leaps far in search of hidden oases.</p>
+      </div>
+      <!-- Add more as you like... -->
+    </div>
+
+    <h3>Rarity & Collectibility</h3>
+    <p>Some frogs might reveal rare color patterns, special hats, or legendary croak levels. Try new IDs to find them!</p>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 FROG GENERATOR | NEON AMPHIBIANS & CODE
+  </footer>
+
+  <!-- Script: EXACT SAME LOGIC, REPLACING “CAT” WITH “FROG” -->
+  <script>
+  (function() {
+    // DOM Elements
+    const connectWalletButton = document.getElementById('connect-wallet');
+    const walletAddressDisplay = document.getElementById('wallet-address');
+    const generatorSection = document.getElementById('generator-section');
+    const frogInput = document.getElementById('frog-id');
+    const generateButton = document.getElementById('generate-button');
+    const frogShowcase = document.getElementById('frog-showcase');
+    const loadingContainer = document.getElementById('loading-container');
+    const logArea = document.getElementById('logArea');
+
+    // Phantom Wallet Integration
+    const getProvider = () => {
+      if ("solana" in window) {
+        const provider = window.solana;
+        if (provider.isPhantom) return provider;
+      }
+      return null;
+    };
+
+    let userWalletAddress = null;
+
+    // Connect Wallet
+    const connectWallet = async () => {
+      const provider = getProvider();
+      if (provider) {
+        try {
+          const response = await provider.connect();
+          userWalletAddress = response.publicKey.toString();
+          walletAddressDisplay.textContent = Connected: ${userWalletAddress.substring(0,6)}...${userWalletAddress.substring(userWalletAddress.length-4)};
+          connectWalletButton.style.display = 'none';
+          generatorSection.style.display = 'block';
+          logMessage("Wallet connected successfully.", "success");
+
+          checkExistingFrog(userWalletAddress);
+        } catch (err) {
+          console.error(err);
+          logMessage("Failed to connect wallet.", "error");
+        }
+      } else {
+        alert("Phantom Wallet not found. Please install the Phantom extension.");
+        window.open("https://phantom.app/", "_blank");
+      }
+    };
+    connectWalletButton.addEventListener('click', connectWallet);
+
+    // Frog Archetypes + ASCII
+    const FROG_TYPES = [
+      {
+        species: 'Mellow Marsh Frog',
+        traits: ['Calm', 'Easygoing', 'Zen'],
+        art: String.raw`
+   (   -.-  )  ~ "Zzzz..."
+    (   __  )
+     \()/
+        `
+      },
+      {
+        species: 'Swamp Titan Toad',
+        traits: ['Massive', 'Rumbly', 'Voracious'],
+        art: String.raw`
+   __
+  (    )  ~ "Buurp!"
+ (  OO  )
+  \ __ /
+   \/\/
+        `
+      },
+      {
+        species: 'Neon Tree Frog',
+        traits: ['Glowy', 'Acrobatic', 'Curious'],
+        art: String.raw`
+   /\  /\ 
+  (  o.o  ) ~ "Glow..."
+  (   __  )
+   \()/
+        `
+      },
+      {
+        species: 'Desert Hopper',
+        traits: ['Resilient', 'Leapy', 'Thirsty'],
+        art: String.raw`
+ (  o--o ) ~ "Gulp..."
+  (  __ )
+  /(__)\
+        `
+      },
+      // Add more frogs as desired...
+    ];
+
+    const SKIN_COLORS = [
+      'Green Skin', 'Brown Skin', 'Spotted Skin', 'Grey Skin',
+      'Golden Skin', 'Aqua Skin', 'Rainbow Skin', 'Pink Skin'
+    ];
+
+    const ACCESSORIES = [
+      'Tiny Crown', 'Lilypad Hat', 'Fly Swatter', 'Water Cape',
+      'Bowtie', 'Laser Pointer', 'Croak Amplifier', 'Royal Lily'
+    ];
+
+    // Basic ID check
+    function validateID(input) {
+      return input.length >= 4;
+    }
+
+    // Hash function
+    function hashID(input) {
+      let hash = 0;
+      for (let i = 0; i < input.length; i++) {
+        const char = input.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0; // Convert to 32-bit int
+      }
+      return Math.abs(hash);
+    }
+
+    // Frog creation
+    function generateFrog(hash) {
+      const speciesIndex = hash % FROG_TYPES.length;
+      const colorIndex = (hash >> 2) % SKIN_COLORS.length;
+      const accessoryIndex = (hash >> 4) % ACCESSORIES.length;
+      const croakLevel = (hash % 100) + 1;
+
+      const frogType = FROG_TYPES[speciesIndex];
+      return {
+        species: frogType.species,
+        skinColor: SKIN_COLORS[colorIndex],
+        accessory: ACCESSORIES[accessoryIndex],
+        trait: frogType.traits[hash % frogType.traits.length],
+        croakLevel: croakLevel,
+        asciiArt: frogType.art
+      };
+    }
+
+    // Show/hide loading
+    function showLoading() {
+      loadingContainer.style.display = 'block';
+      frogShowcase.innerHTML = '<h2>Your Frog Companion</h2>';
+      frogShowcase.style.display = 'none';
+    }
+    function hideLoading() {
+      loadingContainer.style.display = 'none';
+    }
+
+    // Display Frog
+    function displayFrog(frog) {
+      const frogCard = document.createElement('div');
+      frogCard.className = 'gnome'; // reuse style class
+      frogCard.innerHTML = `
+${frog.asciiArt}
+<p><strong>Species:</strong> ${frog.species}</p>
+<p><strong>Skin Color:</strong> ${frog.skinColor}</p>
+<p><strong>Personality Trait:</strong> ${frog.trait}</p>
+<p><strong>Accessory:</strong> ${frog.accessory}</p>
+<p><strong>Croak Level:</strong> ${frog.croakLevel}/100</p>
+      `;
+
+      // Download button
+      const downloadButton = document.createElement('button');
+      downloadButton.className = 'download-btn';
+      downloadButton.textContent = 'Download Frog Info';
+      downloadButton.addEventListener('click', () => downloadFrog(frog));
+
+      // Share button
+      const shareButton = document.createElement('button');
+      shareButton.className = 'share-btn';
+      shareButton.textContent = 'Share on X';
+      shareButton.addEventListener('click', () => shareOnX(frog));
+
+      frogCard.appendChild(downloadButton);
+      frogCard.appendChild(shareButton);
+      frogShowcase.appendChild(frogCard);
+
+      frogShowcase.style.display = 'block';
+    }
+
+    // Download Frog
+    function downloadFrog(frog) {
+      const frogDetails = `
+Frog Details:
+-------------------
+Species: ${frog.species}
+Skin Color: ${frog.skinColor}
+Personality Trait: ${frog.trait}
+Accessory: ${frog.accessory}
+Croak Level: ${frog.croakLevel}/100
+
+ASCII Art:
+${frog.asciiArt}
+      `;
+      const blob = new Blob([frogDetails], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = ${frog.species.replace(/\s/g, '_')}_Frog.txt;
+      link.click();
+    }
+
+    // Share on X
+    function shareOnX(frog) {
+      const message = `I just adopted a new ASCII Frog!
+
+Species: ${frog.species}
+Skin Color: ${frog.skinColor}
+Trait: ${frog.trait}
+Accessory: ${frog.accessory}
+Croak Level: ${frog.croakLevel}/100
+
+#CreateAFrog
+@FrogGeneratorNeon
+      `;
+      const tweetUrl = https://twitter.com/intent/tweet?text=${encodeURIComponent(message)};
+      window.open(tweetUrl, '_blank');
+    }
+
+    // Logging
+    function logMessage(msg, type="info") {
+      const span = document.createElement("span");
+      span.classList.add(type);
+      span.innerText = msg + "\n";
+      logArea.appendChild(span);
+      logArea.scrollTop = logArea.scrollHeight;
+    }
+
+    // Check existing frog
+    function checkExistingFrog(walletAddress) {
+      const frogData = localStorage.getItem(frog_${walletAddress});
+      if (frogData) {
+        const existingFrog = JSON.parse(frogData);
+        displayFrog(existingFrog);
+        logMessage("A Frog already exists for this wallet.", "warning");
+        generatorSection.style.display = 'none';
+      }
+    }
+
+    // Save Frog
+    function saveFrog(walletAddress, frog) {
+      localStorage.setItem(frog_${walletAddress}, JSON.stringify(frog));
+    }
+
+    // Generate button event
+    generateButton.addEventListener('click', () => {
+      if (!userWalletAddress) {
+        alert('Please connect your Phantom wallet first!');
+        return;
+      }
+
+      const frogID = frogInput.value.trim();
+      if (!validateID(frogID)) {
+        alert('Please enter a valid ID (at least 4 characters).');
+        return;
+      }
+
+      // Check if frog is already stored
+      const existingFrog = localStorage.getItem(frog_${userWalletAddress});
+      if (existingFrog) {
+        alert('You already have a Frog for this wallet.');
+        logMessage("Attempted to adopt multiple Frogs for the same wallet.", "warning");
+        checkExistingFrog(userWalletAddress);
+        return;
+      }
+
+      showLoading();
+
+      // Mimic asynchronous generation
+      setTimeout(() => {
+        const combinedID = userWalletAddress + frogID;
+        const hash = hashID(combinedID);
+        const newFrog = generateFrog(hash);
+
+        hideLoading();
+        displayFrog(newFrog);
+        logMessage(Frog "${newFrog.species}" adopted successfully., "success");
+
+        saveFrog(userWalletAddress, newFrog);
+
+        // Hide the generator to prevent multiple frogs
+        generatorSection.style.display = 'none';
+      }, 2000);
+    });
+  })();
+  </script>
+</body>
+</html>
